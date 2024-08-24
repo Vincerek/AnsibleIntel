@@ -1,0 +1,22 @@
+---
+- name: Install necessary packages
+  hosts: all
+  become: yes  # Run tasks as root
+
+  tasks:
+    - name: Ensure apt cache is updated
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - git
+          - cmake
+          - build-essential
+          - pkg-config
+          - protobuf-compiler
+          - net-tools
+          - ipset
+          - ca-certificates
+        state: present
