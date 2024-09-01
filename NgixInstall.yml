@@ -1,12 +1,40 @@
 version: '3'
+
 services:
-  app:
-    image: 'docker.io/jc21/nginx-proxy-manager:latest'
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - "80:80"      # HTTP
+      - "81:81"      # Admin panel
+      - "443:443"    # HTTPS
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "admin"
+      DB_MYSQL_PASSWORD: "admin"
+      DB_MYSQL_NAME: "npm"
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "admin"
+      MYSQL_DATABASE: "npm"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  npm_data:
+  npm_letsencrypt:
+  mysql_data:
+
+networks:
+  default:
+    external:
+      name: nginx-proxy-manager
